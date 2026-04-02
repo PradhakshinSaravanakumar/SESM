@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production builds
+client/build/
+dist/
+
+# Environment variables
+.env
+server/.env
+
+# IDE and System files
+.vscode/
+.idea/
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Salesforce/Other tool leftovers (if any)
+.sfdx/
+.local/
