@@ -23,3 +23,6 @@ yarn-error.log*
 # Salesforce/Other tool leftovers (if any)
 .sfdx/
 .local/
+node_modules/ 
+client/node_modules/ 
+.cache/ 
