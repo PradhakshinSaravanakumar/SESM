@@ -1,3 +1,11 @@
+# Variables to prompt the user during deployment
+variables:
+  - key: MONGO_URI
+    description: "Your MongoDB Atlas connection string (e.g., mongodb+srv://...)"
+  - key: JWT_SECRET
+    description: "A secure string for signing JSON Web Tokens"
+    generateValue: true
+
 services:
   # Backend Service
   - type: web
@@ -11,8 +19,8 @@ services:
       - key: NODE_VERSION
         value: 18.x
       - key: MONGO_URI
-        fromConfig: true # User will provide this in Render dashboard
+        fromVariable: MONGO_URI
       - key: JWT_SECRET
-        fromConfig: true # User will provide this in Render dashboard
+        fromVariable: JWT_SECRET
       - key: PORT
         value: 10000
