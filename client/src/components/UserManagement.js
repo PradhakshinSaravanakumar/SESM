@@ -1,36 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import API_URL from '../config';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const { token } = useAuth();
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/users`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  }, [token]);
+
+  const fetchOnlineUsers = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/online-users`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setOnlineUsers(data.map(user => user._id));
+    } catch (error) {
+      console.error('Error fetching online users:', error);
+    }
+  }, [token]);
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/admin/users', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    const fetchOnlineUsers = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/admin/online-users', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setOnlineUsers(data.map(user => user._id));
-      } catch (error) {
-        console.error('Error fetching online users:', error);
-      }
-    };
-
     fetchUsers();
     fetchOnlineUsers();
 
@@ -40,11 +41,11 @@ const UserManagement = () => {
     }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [token]);
+  }, [fetchUsers, fetchOnlineUsers]);
 
   const handleUpdateUser = async (id, updatedData) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/users/${id}`,
+      const response = await fetch(`${API_URL}/api/admin/users/${id}`,
         {
           method: 'PUT',
           headers: {
@@ -63,7 +64,7 @@ const UserManagement = () => {
 
   const handleDeleteUser = async id => {
     try {
-      await fetch(`http://localhost:5000/api/admin/users/${id}`,
+      await fetch(`${API_URL}/api/admin/users/${id}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }

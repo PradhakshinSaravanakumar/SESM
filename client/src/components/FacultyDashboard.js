@@ -1,33 +1,34 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import API_URL from '../config';
 
 const FacultyDashboard = ({ onNavigate }) => {
   const { token } = useAuth();
   const [studentData, setStudentData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/emotions/all-students', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setStudentData(data);
-        }
-      } catch (error) {
-        console.error('Error fetching all student data:', error);
-      } finally {
-        setIsLoading(false);
+  const fetchAllData = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/emotions/all-students`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setStudentData(data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching all student data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
 
+  useEffect(() => {
     fetchAllData();
     const interval = setInterval(fetchAllData, 5000);
     return () => clearInterval(interval);
-  }, [token]);
+  }, [fetchAllData]);
 
   const stats = useMemo(() => {
     // Unique students

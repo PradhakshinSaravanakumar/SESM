@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import API_URL from '../config';
 
 const FacultyAlerts = () => {
   const { token } = useAuth();
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/emotions/all-students', {
+      const response = await fetch(`${API_URL}/api/emotions/all-students`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -23,17 +24,17 @@ const FacultyAlerts = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchAlerts();
     const interval = setInterval(fetchAlerts, 5000);
     return () => clearInterval(interval);
-  }, [token]);
+  }, [fetchAlerts]);
 
   const updateAlertStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/emotions/alert-status/${id}`, {
+      const response = await fetch(`${API_URL}/api/emotions/alert-status/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

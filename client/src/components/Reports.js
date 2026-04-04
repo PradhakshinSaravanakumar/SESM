@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import API_URL from '../config';
 
 const Reports = () => {
   const { token } = useAuth();
@@ -12,7 +13,7 @@ const Reports = () => {
     // Fetch students for the dropdown
     const fetchStudents = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/emotions/all-students', {
+        const response = await fetch(`${API_URL}/api/emotions/all-students`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -39,7 +40,7 @@ const Reports = () => {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/emotions/student/${selectedStudent}`,
+      const response = await fetch(`${API_URL}/api/emotions/student/${selectedStudent}`,
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }

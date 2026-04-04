@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as faceapi from 'face-api.js';
+import API_URL from '../config';
 import './AssessmentForm.css';
 
 const AssessmentSession = ({ onComplete }) => {
@@ -45,11 +46,11 @@ const AssessmentSession = ({ onComplete }) => {
   }, []);
 
   useEffect(() => {
-    let streamRef = null;
+    let currentStream = null;
     const startVideo = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
-        streamRef = stream;
+        currentStream = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -61,8 +62,8 @@ const AssessmentSession = ({ onComplete }) => {
       startVideo();
     }
     return () => {
-      if (streamRef) {
-        streamRef.getTracks().forEach(track => track.stop());
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
       }
     };
   }, [isModelsLoaded]);
@@ -98,22 +99,23 @@ const AssessmentSession = ({ onComplete }) => {
     return () => { if (intervalId) clearInterval(intervalId); };
   }, [isModelsLoaded]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
     setIsSubmitting(true);
-    const submissionPayload = {
-      ...formData,
-      emotion: aiDetectedEmotion,
-      confidence: aiConfidence
-    };
 
     try {
-      const response = await fetch('http://localhost:5000/api/emotions/save', {
+      const response = await fetch(`${API_URL}/api/emotions/save`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(submissionPayload),
+        body: JSON.stringify({
+          ...formData,
+          emotion: aiDetectedEmotion,
+          confidence: aiConfidence,
+          timestamp: new Date()
+        }),
       });
       if (response.ok) {
         onComplete();

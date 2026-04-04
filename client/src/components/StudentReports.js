@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import API_URL from '../config';
 import './FacultyLayout.css'; // Reusing the same panel and card styles
 
 const StudentReports = () => {
@@ -12,7 +13,7 @@ const StudentReports = () => {
     // Check if user has any data to generate reports
     const checkData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/emotions/my-history', {
+        const response = await fetch(`${API_URL}/api/emotions/my-history`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -31,7 +32,7 @@ const StudentReports = () => {
     setIsGenerating(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/emotions/my-history', {
+      const response = await fetch(`${API_URL}/api/emotions/my-history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

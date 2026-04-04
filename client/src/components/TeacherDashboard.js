@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import API_URL from '../config';
 
 const TeacherDashboard = () => {
   const [studentData, setStudentData] = useState([]);
   const { token } = useAuth();
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/emotions/all-students', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setStudentData(data);
-      } catch (error) {
-        console.error('Error fetching all student data:', error);
-      }
-    };
+  const fetchAllData = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/emotions/all-students`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setStudentData(data);
+    } catch (error) {
+      console.error('Error fetching all student data:', error);
+    }
+  }, [token]);
 
+  useEffect(() => {
     fetchAllData();
     const interval = setInterval(fetchAllData, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [token]);
+  }, [fetchAllData]);
 
   // Aggregate data for visualization
   const getEmotionCounts = () => {

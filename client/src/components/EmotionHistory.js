@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import API_URL from '../config';
 
 const EmotionHistory = () => {
   const [history, setHistory] = useState([]);
   const { token } = useAuth();
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/emotions/my-history', {
+      const response = await fetch(`${API_URL}/api/emotions/my-history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -15,13 +16,13 @@ const EmotionHistory = () => {
     } catch (error) {
       console.error('Error fetching emotion history:', error);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchHistory();
     const intervalId = setInterval(fetchHistory, 5000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchHistory]);
 
   return (
     <div className="history-container" style={{ marginTop: '1.5rem' }}>
