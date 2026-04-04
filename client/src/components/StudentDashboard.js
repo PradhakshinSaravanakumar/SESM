@@ -5,6 +5,7 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 import './StudentDashboard.css';
+import API_URL from '../config';
 
 // Fallback logic for old "Happy, Sad" DB entries
 const mapEmotionToScores = (emotionName) => {
@@ -32,8 +33,6 @@ const extractEntryScores = (entry) => {
   }
   return mapEmotionToScores(entry.emotion);
 };
-
-import API_URL from '../config';
 
 const StudentDashboard = ({ onNewEntry }) => {
   const { user, token } = useAuth();
